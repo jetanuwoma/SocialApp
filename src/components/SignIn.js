@@ -6,7 +6,8 @@ import {
   Image,
   AsyncStorage,
   TextInput,
-  TouchableOpacity
+  TouchableOpacity,
+  ActivityIndicator
 } from 'react-native'
 import { connect } from 'react-redux';
 import LinearGradient from 'react-native-linear-gradient';
@@ -14,6 +15,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import { goHome } from '../navigation'
 import { USER_KEY } from '../config'
 import { Navigation } from 'react-native-navigation';
+import { loginUser, loginUserSuccessful, loginUserFailed } from '../actions/auth';
 
 class SignIn extends React.Component {
   static get options() {
@@ -29,8 +31,13 @@ class SignIn extends React.Component {
     this.state = {
       username: '', password: '',
       borderColor: '#fff',
-      borderColorPass: '#fff'
+      borderColorPass: '#fff',
+      requesting: false,
+      errorMessage: '',
+      hasError: false,
     }
+
+    this.signInUser = this.signInUser.bind(this);
   }
 
   componentDidMount() {
@@ -38,23 +45,31 @@ class SignIn extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps, 'props');
+    console.log(nextProps, 'I just recieved props');
   }
 
   onChangeText = (key, value) => {
     this.setState({ [key]: value })
   }
-  signIn = async () => {
-    const { username, password } = this.state
-    try {
-       // login with provider
-       const user = await AsyncStorage.setItem(USER_KEY, username)
-       console.log('user successfully signed in!', user)
-       goHome()
-    } catch (err) {
-      console.log('error:', err)
-    }
+
+  
+   signInUser() {
+    const { username, password } = this.state;
+    this.setState({ requesting: true, hasError: false })
+    loginUser(username, password).then((data) => {
+      this.setState({ requesting: false, hasError: false });
+      this.props.dispatch(loginUserSuccessful(data.data));
+      AsyncStorage.setItem('@USER:KEY', data.data.token).then(() => {
+        goHome();
+      });
+
+    }).catch((error) => {
+      console.log(error.response);
+      this.setState({ requesting: false, hasError: true, errorMessage: error.response.data.message });
+    });
   }
+
+
   render() {
     return (
       <View style={styles.container}>
@@ -97,10 +112,21 @@ class SignIn extends React.Component {
               onBlur={() => this.setState({ borderColorPass: '#fff' })}
               secureTextEntry={true}
             />
+            {this.state.hasError &&
+              <Text style={{ marginTop: 10, color: '#FF0000' }}>{this.state.errorMessage}</Text>
+            }
               <View style={styles.buttonLayout}>
                 <LinearGradient colors={['#4957fd', '#4b59fd', '#757dff']} locations={[0,0.44,1]} style={styles.loginButton}>
-                <TouchableOpacity style={{ width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
-                  <Text style={{ color: '#fff' }}>Login</Text>
+                <TouchableOpacity style={{ width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}
+                 onPress={this.signInUser}
+                >
+                {!this.state.requesting &&
+                  <Text style={{ color: '#fff' }}>Sign In</Text>
+                }
+                {this.state.requesting &&
+                   <ActivityIndicator size="small" color="#fff" />
+                }
+                
                 </TouchableOpacity>
                 </LinearGradient>
                 <Text style={{ fontFamily: 'Aileron-Regular', color: 'rgba(73, 88, 253, 255)' }}>Forget Password?</Text>

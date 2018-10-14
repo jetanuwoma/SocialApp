@@ -6,8 +6,9 @@ import {
   AsyncStorage
 } from 'react-native'
 import { connect } from 'react-redux';
-
+import jwtDecode from 'jwt-decode';
 import { goToLogin, goHome } from '../navigation'
+import { loginUserSuccessful } from '../actions/auth';
 
 import { USER_KEY } from '../config'
 
@@ -17,14 +18,16 @@ class Initialising extends React.Component {
     super(props);
 
   }
+
   componentWillReceiveProps(nexProps) {
     console.log(nexProps);
   }
   async componentDidMount() {
     try {
       const user = await AsyncStorage.getItem(USER_KEY)
-      console.log('user: ', user)
       if (user) {
+        const data = { user: jwtDecode(user) };
+        this.props.dispatch(loginUserSuccessful(data));
         goHome()
       } else {
         goToLogin()
