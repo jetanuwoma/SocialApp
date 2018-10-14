@@ -5,11 +5,15 @@ import {
   Image,
   TextInput,
   StyleSheet,
-  TouchableOpacity
+  TouchableOpacity,
+  ActivityIndicator,
+  AsyncStorage
 } from 'react-native'
 import { connect } from 'react-redux';
+import { goHome } from '../navigation'
 import LinearGradient from 'react-native-linear-gradient';
 import RadioGroup from 'react-native-radio-buttons-group';
+import { signUpUser, loginUserSuccessful  } from '../actions/auth';
 
 
 class SignUp extends React.Component {
@@ -18,7 +22,9 @@ class SignUp extends React.Component {
     super(props);
 
     this.state = {
-      username: '', password: '', email: '', phoneNumber: '',
+      username: '', password: '', email: '', contact_number: '',
+      fullName: '',
+      password2: '',
       gender: 'Male',
       termsAgreed: false,
       borderColor: '#a0a0a0',
@@ -27,6 +33,8 @@ class SignUp extends React.Component {
       borderColorPass2: '#a0a0a0',
       borderColorMobile: '#a0a0a0',
       borderColorDob: '#a0a0a0',
+      borderColorUsername: '#a0a0a0',
+      isRequesting: false,
       genderData: [
         {
           label: 'Male'
@@ -34,10 +42,13 @@ class SignUp extends React.Component {
         {
           label: 'Female'
         },
-      ]
+      ],
+      hasError: false,
+      errorMessage: ''
     }
 
     this.onGenderChanged = this.onGenderChanged.bind(this);
+    this.signUp = this.signUp.bind(this);
   }
 
 
@@ -45,21 +56,37 @@ class SignUp extends React.Component {
     this.setState({ [key]: val })
   }
 
-  signUp = async () => {
-    const { username, password, email, phoneNumber } = this.state
-    try {
-      // here place your signup logic
-      console.log('user successfully signed up!: ', success)
-    } catch (err) {
-      console.log('error signing up: ', err)
+  signUp() {
+    this.setState({ hasError: false, errorMessage: '', isRequesting: true })
+    const { username, password, password2, email, contact_number, gender, fullName } = this.state
+    const data = {
+      username, password, email,
+      contact_number, gender, fullName,
+      dob: '02/02/1992'
     }
+
+    if (password === password2) {
+      signUpUser(data).then((data) => {
+        this.props.dispatch(loginUserSuccessful(data.data));
+        this.setState({ isRequesting: false, hasError: false, errorMessage: '' });
+        AsyncStorage.setItem('@USER:KEY', data.data.token).then(() => {
+          goHome();
+        });
+      }).catch((error) => {
+        console.log(error.response.data.errors)
+        this.setState({ isRequesting: false, hasError: true, errorMessage: error.response.data.errors[0].message })
+      });
+    } else {
+      this.setState({ errorMessage: 'Password do not match', hasError: true, isRequesting: false });
+    }
+
   }
 
   onGenderChanged(data) {
     if (data[0].selected === true) {
       this.setState({ gender: 'Male' });
     } else {
-      this.setState({ gender: 'Femlae' });
+      this.setState({ gender: 'Female' });
     }
   }
 
@@ -73,7 +100,7 @@ class SignUp extends React.Component {
         <View style={styles.loginForm}>
           <View style={styles.formContainer}>
             <Text style={{ fontFamily: 'Aileron-SemiBold', fontSize: 17 }}>SIGN UP</Text>
-            <View style={{ marginTop: 30 }}>
+            <View style={{ marginTop: 0 }}>
             <TextInput
               style={{
                 width: '100%',
@@ -84,9 +111,24 @@ class SignUp extends React.Component {
                 fontFamily: 'Aileron-Regular'
               }}
               placeholder="Name"
-              onChangeText={(name) => this.setState({name})}
+              onChangeText={(fullName) => this.setState({fullName})}
               onFocus={() => this.setState({ borderColorName: 'blue' })}
               onBlur={() => this.setState({ borderColorName: '#a0a0a0' })}
+            />
+             <TextInput
+              style={{
+                width: '100%',
+                padding: 5,
+                fontSize: 15,
+                borderBottomWidth: 1,
+                borderBottomColor: this.state.borderColorUsername,
+                fontFamily: 'Aileron-Regular',
+                marginTop: 15
+              }}
+              placeholder="Username"
+              onChangeText={(username) => this.setState({username})}
+              onFocus={() => this.setState({ borderColorUsername: 'blue' })}
+              onBlur={() => this.setState({ borderColorUsername: '#a0a0a0' })}
             />
             <TextInput
               style={{
@@ -147,7 +189,7 @@ class SignUp extends React.Component {
                 marginTop: 15
               }}
               placeholder="Mobile"
-              onChangeText={(mobile) => this.setState({mobile})}
+              onChangeText={(contact_number) => this.setState({contact_number})}
               onFocus={() => this.setState({ borderColorMobile: 'blue' })}
               onBlur={() => this.setState({ borderColorMobile: '#a0a0a0' })}
             />
@@ -155,10 +197,19 @@ class SignUp extends React.Component {
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }}>
               <RadioGroup flexDirection="row" radioButtons={this.state.genderData} onPress={this.onGenderChanged} />
             </View>
+              {this.state.hasError &&
+                <Text style={{ marginTop: 10, color: '#FF0000' }}>{this.state.errorMessage}</Text>
+              }
               <View style={styles.buttonLayout}>
                 <LinearGradient colors={['#4957fd', '#4b59fd', '#757dff']} locations={[0,0.44,1]} style={styles.loginButton}>
-                <TouchableOpacity style={{ width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }} onPress={() => console.log('pressed')}>
-                  <Text style={{ color: '#fff' }}>Sign Up</Text>
+                <TouchableOpacity style={{ width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }} 
+                  onPress={this.signUp}>
+                  {!this.state.isRequesting &&
+                    <Text style={{ color: '#fff' }}>Sign Up</Text>
+                  }
+                  {this.state.isRequesting &&
+                    <ActivityIndicator size="small" color="#fff" />
+                  }
                 </TouchableOpacity>
                 </LinearGradient>
               </View>
