@@ -24,6 +24,17 @@
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>localhost</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+			</dict>
+		</dict>
+	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
 	<key>UILaunchStoryboardName</key>
@@ -40,21 +51,23 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
-	<key>NSAppTransportSecurity</key>
-	<!--See http://ste.vn/2015/06/10/configuring-app-transport-security-ios-9-osx-10-11/ -->
-	<dict>
-    <key>NSAllowsArbitraryLoads</key>
-    <true/>
-		<key>NSExceptionDomains</key>
-		<dict>
-			<key>localhost</key>
-			<dict>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
-			</dict>
-		</dict>
-	</dict>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Aileron-BoldItalic.otf</string>
+		<string>Aileron-Bold.otf</string>
+		<string>Aileron-Heavy.otf</string>
+		<string>Aileron-HeavyItalic.otf</string>
+		<string>Aileron-Italic.otf</string>
+		<string>Aileron-Light.otf</string>
+		<string>Aileron-Regular.otf</string>
+		<string>Aileron-SemiBold.otf</string>
+		<string>Aileron-SemiBoldItalic.otf</string>
+		<string>Aileron-Thin.otf</string>
+		<string>Aileron-ThinItalic.otf</string>
+		<string>Aileron-UltraLight.otf</string>
+		<string>Aileron-UltraLightItalic.otf</string>
+		<string>Aileron-Black.otf</string>
+		<string>Aileron-BlackItalic.otf</string>
+	</array>
 </dict>
 </plist>
