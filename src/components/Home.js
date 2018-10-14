@@ -22,6 +22,10 @@ import { USER_KEY } from '../config'
       }
     };
   }
+  constructor(props) {
+    super(props);
+  }
+
   logout = async () => {
     try {
       await AsyncStorage.removeItem(USER_KEY)
@@ -62,8 +66,8 @@ const styles = StyleSheet.create({
   }
 });
 
-const mapStateToProps = auth => ({
-  user: auth.user
+const mapStateToProps = state => ({
+  user: state.auth.user
 })
 
 export default connect(mapStateToProps)(Home);
