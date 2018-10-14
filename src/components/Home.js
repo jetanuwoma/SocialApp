@@ -6,12 +6,13 @@ import {
   StyleSheet,
   AsyncStorage
 } from 'react-native'
-import { goToLogin } from './navigation'
+import { goToLogin } from '../navigation'
 import {Navigation} from 'react-native-navigation';
+import { connect } from 'react-redux';
 
-import { USER_KEY } from './config'
+import { USER_KEY } from '../config'
 
-export default class Home extends React.Component {
+ class Home extends React.Component {
   static get options() {
     return {
       topBar: {
@@ -59,4 +60,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   }
+});
+
+const mapStateToProps = auth => ({
+  user: auth.user
 })
+
+export default connect(mapStateToProps)(Home);
