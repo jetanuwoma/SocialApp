@@ -5,12 +5,21 @@ import {
   StyleSheet,
   AsyncStorage
 } from 'react-native'
+import { connect } from 'react-redux';
 
-import { goToLogin, goHome } from './navigation'
+import { goToLogin, goHome } from '../navigation'
 
-import { USER_KEY } from './config'
+import { USER_KEY } from '../config'
 
-export default class Initialising extends React.Component {
+class Initialising extends React.Component {
+
+  constructor(props) {
+    super(props);
+
+  }
+  componentWillReceiveProps(nexProps) {
+    console.log(nexProps);
+  }
   async componentDidMount() {
     try {
       const user = await AsyncStorage.getItem(USER_KEY)
@@ -45,3 +54,10 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   }
 })
+
+
+const mapStateToProps = auth => ({
+  user: auth.user
+})
+
+export default connect(mapStateToProps)(Initialising);

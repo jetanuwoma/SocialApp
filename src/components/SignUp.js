@@ -7,10 +7,12 @@ import {
   StyleSheet,
   TouchableOpacity
 } from 'react-native'
+import { connect } from 'react-redux';
 import LinearGradient from 'react-native-linear-gradient';
 import RadioGroup from 'react-native-radio-buttons-group';
 
-export default class SignUp extends React.Component {
+
+class SignUp extends React.Component {
 
   constructor(props) {
     super(props);
@@ -65,7 +67,7 @@ export default class SignUp extends React.Component {
     return (
       <View style={styles.container}>
         <View style={styles.topContent}>
-          <Image source={require('./assets/world.png')} resizeMode="contain" style={styles.worldLogo} />
+          <Image source={require('../assets/world.png')} resizeMode="contain" style={styles.worldLogo} />
           <Text style={styles.appName}>AUGTA</Text>
         </View>
         <View style={styles.loginForm}>
@@ -230,4 +232,10 @@ const styles = StyleSheet.create({
     bottom: -50,
     right: -20
   }
+});
+
+const mapStateToProps = auth => ({
+  user: auth.user
 })
+
+export default connect(mapStateToProps)(SignUp);

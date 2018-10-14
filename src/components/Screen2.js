@@ -5,10 +5,8 @@ import {
   Button,
   StyleSheet,
 } from 'react-native'
-import { goToAuth } from './navigation'
 import {Navigation} from 'react-native-navigation';
 
-import { USER_KEY } from './config'
 
 export default class Screen2 extends React.Component {
   static get options() {

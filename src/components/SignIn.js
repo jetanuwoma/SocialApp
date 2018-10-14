@@ -8,13 +8,14 @@ import {
   TextInput,
   TouchableOpacity
 } from 'react-native'
+import { connect } from 'react-redux';
 import LinearGradient from 'react-native-linear-gradient';
 
-import { goHome, gotoSignUp } from './navigation'
-import { USER_KEY } from './config'
+import { goHome } from '../navigation'
+import { USER_KEY } from '../config'
 import { Navigation } from 'react-native-navigation';
 
-export default class SignIn extends React.Component {
+class SignIn extends React.Component {
   static get options() {
     return {
       topBar: {
@@ -22,11 +23,24 @@ export default class SignIn extends React.Component {
       }
     };
   }
-  state = {
-    username: '', password: '',
-    borderColor: '#fff',
-    borderColorPass: '#fff'
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      username: '', password: '',
+      borderColor: '#fff',
+      borderColorPass: '#fff'
+    }
   }
+
+  componentDidMount() {
+    console.log(this.props, 'our props');
+  }
+
+  componentWillReceiveProps(nextProps) {
+    console.log(nextProps, 'props');
+  }
+
   onChangeText = (key, value) => {
     this.setState({ [key]: value })
   }
@@ -45,7 +59,7 @@ export default class SignIn extends React.Component {
     return (
       <View style={styles.container}>
         <View style={styles.topContent}>
-          <Image source={require('./assets/world.png')} resizeMode="contain" style={styles.worldLogo} />
+          <Image source={require('../assets/world.png')} resizeMode="contain" style={styles.worldLogo} />
           <Text style={styles.appName}>AUGTA</Text>
         </View>
         <View style={styles.loginForm}>
@@ -172,4 +186,10 @@ const styles = StyleSheet.create({
     bottom: -50,
     left: 70
   }
+});
+
+const mapStateToProps = state => ({
+  user: state.auth.user
 })
+
+export default connect(mapStateToProps)(SignIn);
