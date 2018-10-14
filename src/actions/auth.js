@@ -15,6 +15,11 @@ export function loginUserFailed(data) {
   }
 }
 
+
 export function loginUser(username, password) {
   return client.post('/users/login', {username, password});
+}
+
+export function signUpUser(data) {
+  return client.post('/users', data);
 }

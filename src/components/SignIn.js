@@ -11,9 +11,7 @@ import {
 } from 'react-native'
 import { connect } from 'react-redux';
 import LinearGradient from 'react-native-linear-gradient';
-
 import { goHome } from '../navigation'
-import { USER_KEY } from '../config'
 import { Navigation } from 'react-native-navigation';
 import { loginUser, loginUserSuccessful, loginUserFailed } from '../actions/auth';
 
